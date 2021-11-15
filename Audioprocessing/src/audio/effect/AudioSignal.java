@@ -31,6 +31,10 @@ public class AudioSignal {
             for (int i = 0; i < otherlen; i++) {
                 sampleBuffer[i] = other.getSample(i);
             }
+            this.dBlevel=other.getdBLevel();
+        }
+        else{
+            System.out.println("buffer pas assez long");
         }
     }
 
@@ -47,7 +51,8 @@ public class AudioSignal {
             sampleBuffer[i] = ((byteBuffer[2 * i] << 8) + byteBuffer[2 * i + 1]) / 32768.0; // big endian
             somme += sampleBuffer[i];
         }
-        dBlevel = 20 * Math.log10(somme / sampleBuffer.length);
+        //dBlevel = 20 * Math.log10(somme / sampleBuffer.length);
+        dBlevel = audioInput.getLevel();//plus sûr car déjà existant
         return true;
     }
 
@@ -82,6 +87,10 @@ public class AudioSignal {
         return dBlevel;
     }
 
+    public void setdBlevel(double db){
+        this.dBlevel = db;
+    }
+
     public int getFrameSize() {
         return sampleBuffer.length;
     }
@@ -96,7 +105,7 @@ public class AudioSignal {
             audioimput.start();
             audiooutput.open();
             audiooutput.start();
-            AudioSignal audio = new AudioSignal(20000);
+            AudioSignal audio = new AudioSignal(40000);
             audio.recordFrom(audioimput);
             audio.playTo(audiooutput);
         } catch (LineUnavailableException e) {
